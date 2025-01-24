@@ -14,10 +14,10 @@ print(f"PyTorch Version: {torch.__version__}")
 print(f"Device: {device}")
 
 ##-- Setting up hyperparamters
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 RANDOM_STATE = 42
-EPOCHS = 1
-LEARNING_RATE = 2
+EPOCHS = 0.001
+LEARNING_RATE = 100
 
 ##-- Setup directory paths --##
 from pathlib import Path
@@ -75,13 +75,14 @@ model_v2_m_results = engine.train(model=model_v2_m,
                                optimizer=optimizer,
                                loss_fn=loss_fn,
                                epochs=EPOCHS,
-                               device=device)
+                               device=device,
+                               log_file=fr"C:\Users\nextt\Desktop\Hawking\eyeDx-research\eyeDx-fl-centralized\efficientNet\log_files\v2_m_{EPOCHS}_{LEARNING_RATE}_{BATCH_SIZE}.txt")
 end_time = timer()
 
 ##- Save the model --##
 from helper_modules import utils
 utils.save_model(model=model_v2_m,
-                 target_dir="./saved_models",
+                 target_dir=r"C:\Users\nextt\Desktop\Hawking\eyeDx-research\eyeDx-fl-centralized\efficientNet\saved_models",
                  model_name=f"efficientnet_v2_m_{EPOCHS}_{LEARNING_RATE}_{BATCH_SIZE}.pth")
 
 print(f"[INFO]: Total training time: {(end_time-start_time)/60:.2f} minutes.")
@@ -104,6 +105,5 @@ plt.xlabel("Epochs")
 plt.ylabel("Accuracy")
 
 plt.suptitle("EfficientnetV2_M Results")
-plt.savefig(f"./plots/plot_v2_m_{EPOCHS}_{LEARNING_RATE}_{BATCH_SIZE}.png")
+plt.savefig(fr"C:\Users\nextt\Desktop\Hawking\eyeDx-research\eyeDx-fl-centralized\efficientNet\plots\plot_v2_m_{EPOCHS}_{LEARNING_RATE}_{BATCH_SIZE}.png")
 plt.legend()
-plt.show()

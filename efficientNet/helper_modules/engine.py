@@ -123,7 +123,8 @@ def train(model: torch.nn.Module,
           optimizer: torch.optim.Optimizer,
           loss_fn: torch.nn.Module,
           epochs: int,
-          device: torch.device) -> Dict[str, List[float]]:
+          device: torch.device,
+          log_file: str) -> Dict[str, List[float]]:
 
     """Trains and tests a PyTorch model.
 
@@ -164,27 +165,36 @@ def train(model: torch.nn.Module,
                "val_acc": []
     }
 
-    # Loop through training and testing steps for a number of epochs
-    for epoch in tqdm(range(epochs)):
-        train_loss, train_acc = train_step(model=model,
-                                          dataloader=train_dataloader,
-                                          loss_fn=loss_fn,
-                                          optimizer=optimizer,
-                                          device=device)
-        
-        val_loss, val_acc = val_step(model=model,
-                                    dataloader=val_dataloader,
-                                    loss_fn=loss_fn,
-                                    device=device)
+    # Open the log file for writing (using 'w' mode to overwrite file each time)
+    with open(log_file, "w") as f:
+        # Write the headers to the log file
+        f.write(f"Epochs, Train_Loss, Train_Accuracy, Val_Loss, Val_Accuracy\n")
 
-        # Print out what's happening
-        print(f"Epoch: {epoch+1} | train_loss: {train_loss:.4f} | train_acc: {train_acc:.4f} | val_loss: {val_loss:.4f} | val_acc: {val_acc:.4f}")
+        # Loop through training and testing steps for a number of epochs
+        for epoch in tqdm(range(epochs)):
+            train_loss, train_acc = train_step(model=model,
+                                              dataloader=train_dataloader,
+                                              loss_fn=loss_fn,
+                                              optimizer=optimizer,
+                                              device=device)
+            
+            val_loss, val_acc = val_step(model=model,
+                                        dataloader=val_dataloader,
+                                        loss_fn=loss_fn,
+                                        device=device)
 
-        # Update results dictionary
-        results["train_loss"].append(train_loss)
-        results["train_acc"].append(train_acc)
-        results["val_loss"].append(val_loss)
-        results["val_acc"].append(val_acc)
+            # Update results dictionary
+            results["train_loss"].append(train_loss)
+            results["train_acc"].append(train_acc)
+            results["val_loss"].append(val_loss)
+            results["val_acc"].append(val_acc)
+            
+            # Log results to file during each epoch (inside the context of 'with open')
+            f.write(f"{epoch+1}, {train_loss:.4f}, {train_acc:.4f}, {val_loss:.4f}, {val_acc:.4f}\n")
+            
+            # Print out what's happening
+            print(f"Epoch: {epoch+1} | train_loss: {train_loss:.4f} | train_acc: {train_acc:.4f} | val_loss: {val_loss:.4f} | val_acc: {val_acc:.4f}")
 
+    print(f"[INFO]: Training results saved to {log_file}")
     # Return the filled results at the end of the epochs
     return results

@@ -1,0 +1,2 @@
+Epochs, Train_Loss, Train_Accuracy, Val_Loss, Val_Accuracy
+1, 7076.4984, 0.4798, 4730.4028, 0.6224
